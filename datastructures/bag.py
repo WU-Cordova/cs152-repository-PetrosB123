@@ -53,5 +53,4 @@ class Bag(IBag[T]):
             return False
 
     def clear(self) -> None:
-        for item in self.__bag:
-            del self.__bag[item]
+        self.__bag: dict[T, int]= {}
