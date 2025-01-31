@@ -1,8 +1,12 @@
 
 
+from datastructures.bag import Bag
+
+
 def main():
     
-    print("Hello, World!")
+    bag = Bag()
+    print("Hello, World from Project 1!")
 
 
 
