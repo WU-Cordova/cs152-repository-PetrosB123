@@ -1,12 +1,11 @@
 
 
-from datastructures.bag import Bag
-
+from projects.project1.multideck import MultiDeck
+from projects.project1.card import Card, CardSuit, CardRank
+from projects.project1.game import game
 
 def main():
-    
-    bag = Bag()
-    print("Hello, World from Project 1!")
+    game()
 
 
 
