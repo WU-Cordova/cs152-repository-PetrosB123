@@ -1,4 +1,4 @@
-from random import choice, randint
+from random import choice
 from projects.project1.multideck import MultiDeck
 
 
@@ -8,6 +8,10 @@ def game() -> None:
     Main function for the game of BlackJack
     """
     face_cards = ["J", "Q", "K", "A"]
+    yes = ["y", "Y", "Yes", "yes"]
+    valid_hits = ["H", "h", "hit", "Hit"]
+    valid_stays = ["S", "s", "stay", "Stay"]
+
     player_hand = []
     dealer_hand = []
     player_score = 0
@@ -15,13 +19,14 @@ def game() -> None:
     deck_count = choice([2,4,6,8])
     deck = MultiDeck(deck_count)
 
+
     def check() -> None:
         """
         checks if player has 21 or has busted, if not, allows hit or stay
         """
         player_score = value(player_hand)
         print("\n")
-        print(f"Player's Hand: {player_hand} | Score = {player_score}")
+        print_hand(player_hand, player_score)
         if player_score == 21: # forces stay when player reaches 21 and calculates dealer score
             dealer_hand[1] = hidden_card
             dealer_score = value(dealer_hand)
@@ -32,17 +37,24 @@ def game() -> None:
             game_over()
         else:
             choice = ""
-            while choice not in ["H", "h", "hit", "Hit", "S", "s", "stay", "Stay"]:
+            while choice not in valid_hits + valid_stays:
                 choice = input("Do you want to (H)it or (S)tay? ")
-                if choice in ["H", "h", "hit", "Hit"]:
+                if choice in valid_hits:
                     hit(player_hand)
                     check()
-                elif choice in ["S", "s", "stay", "Stay"]:
+                elif choice in valid_stays:
                     stay()
                 else:
-                    choice = input("Invalid input. Do you want to (H)it or (S)tay? ")
-        
-
+                    choice = print("Invalid input. ", end="")
+    
+    def print_hand(hand, score):
+        if hand == player_hand:
+            print(f"Player's Hand: ", end="")
+        else:
+            print(f"Dealer's Hand: ", end="")
+        for card in hand:
+            print(card, end=" ")
+        print(f"| Score = {score}")
 
     def value(hand) -> int:
         """
@@ -71,12 +83,14 @@ def game() -> None:
                     value -= 10
         return value
 
+
     def hit(hand) -> None:
         """
         Adds a card to the inputted hand
         """
         card = deck.rand_card()
         hand.append(f"[{card.card_rank}{card.card_suit}]")
+
 
     def stay() -> None:
         """
@@ -86,35 +100,30 @@ def game() -> None:
         dealer_hand[1] = hidden_card
         dealer_score = value(dealer_hand)
         if dealer_score == 21:
+            print_hand(dealer_hand, dealer_score)
             if dealer_score == player_score:
-                print(f"Dealer's Hand: {dealer_hand} | Score = {dealer_score}")
                 print("Both Blackjacks! It's a Tie!")
-                game_over()
             else:
-                print(f"Dealer's Hand: {dealer_hand} | Score = {dealer_score}")
                 print("Dealer has a Blackjack! Dealer wins!")
-                game_over()
+            game_over()
         else:
             while dealer_score < 17:
                 hit(dealer_hand)
                 dealer_score = value(dealer_hand)
             else:
-                print(f"Dealer's Hand: {dealer_hand} | Score = {dealer_score}")
+                print_hand(dealer_hand, dealer_score)
                 if dealer_score == player_score:
                     print("It's a Tie!")
-                    game_over()
                 elif dealer_score > 21:
                     print("\n")
                     print("Dealer Busted! Player wins!")
-                    game_over()
                 elif dealer_score > player_score:
                     print("\n")
                     print("Dealer wins!")
-                    game_over()
                 else:
                     print("\n")
                     print("Player wins!")
-                    game_over()
+                game_over()
             
 
     def game_over() -> None:
@@ -122,7 +131,7 @@ def game() -> None:
         Let's player decide to play the game again
         """
         redo = input("Would you like to play again? ")
-        if redo in ["y", "Y", "Yes", "yes"]:
+        if redo in yes:
             game()
         else:
             exit()
@@ -131,13 +140,10 @@ def game() -> None:
     print("Welcome to Blackjack!")
     print("\n")
 
-    card = deck.rand_card()
-    player_hand.append(f"[{card.card_rank}{card.card_suit}]")
-    card = deck.rand_card()
-    player_hand.append(f"[{card.card_rank}{card.card_suit}]")
-
-    card = deck.rand_card()
-    dealer_hand.append(f"[{card.card_rank}{card.card_suit}]")
+    hit(player_hand) # adds initial cards by hitting twice for each hand
+    hit(player_hand)
+    
+    hit(dealer_hand)
     hidden_card = deck.rand_card()
     hidden_card = f"[{hidden_card.card_rank}{hidden_card.card_suit}]"
     dealer_hand.append("[Hidden]")
@@ -146,14 +152,15 @@ def game() -> None:
     dealer_score = value(dealer_hand)
 
     print("Inital Deal:")
-    print(f"Player's Hand: {player_hand} | Score = {player_score}")
-    print(f"Dealer's Hand: {dealer_hand} | Score = {dealer_score}")
+    print_hand(player_hand, player_score)
+    print_hand(dealer_hand, dealer_score)
+
 
     if player_score == 21: # checks for Blackjack on iniitial deal, if Player has Blackjack checks if dealer also has Blackjack
         dealer_hand[1] = hidden_card
         dealer_score = value(dealer_hand)
         if player_score > dealer_score:
-            print(f"Dealer's Hand: {dealer_hand} | Score = {dealer_score}")
+            print_hand(dealer_hand, dealer_score)
             print("\n")
             print("Player has Blackjack! Player wins!")
             game_over()
