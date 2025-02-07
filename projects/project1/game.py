@@ -60,27 +60,32 @@ def game() -> None:
         """
         Calculates value of inputted hand and returns the score
         """
-        value = 0
         eleven = False
-        for card in hand:
-            if card != "[Hidden]":
-                card = card[1]
-                if card == "1":
-                    card = "10"
-                if card not in face_cards:
-                    value += int(card)
-                else:
-                    if card != "A":
-                        value += 10
-                    elif value < 11:
-                        value += 11
-                        eleven = True
-                    else:
-                        value += 1
-        if value > 21: # reevaluates Aces that could've wrongly been scored 11 instead of 1
+        value = 0
+        def score(one, value):
             for card in hand:
-                if card[1] == "A" and eleven:
-                    value -= 10
+                if card != "[Hidden]":
+                    card = card[1]
+                    if card == "1":
+                        card = "10"
+                    if card not in face_cards:
+                        value += int(card)
+                    else:
+                        if card != "A":
+                            value += 10
+                        elif one:
+                            value +=1
+                        elif value < 11:
+                            value += 11
+                            eleven = True
+                        else:
+                            value += 1
+            return value
+        value = score(False, value)
+
+        if value > 21: # reevaluates Aces that could've wrongly been scored 11 instead of 1
+            value = 0
+            value = score(True, value)
         return value
 
 
