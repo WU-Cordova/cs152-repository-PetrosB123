@@ -60,7 +60,6 @@ def game() -> None:
         """
         Calculates value of inputted hand and returns the score
         """
-        eleven = False
         value = 0
         def score(one, value):
             for card in hand:
@@ -77,7 +76,6 @@ def game() -> None:
                             value +=1
                         elif value < 11:
                             value += 11
-                            eleven = True
                         else:
                             value += 1
             return value

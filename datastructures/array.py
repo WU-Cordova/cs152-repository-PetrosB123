@@ -19,16 +19,17 @@ from datastructures.iarray import IArray, T
 class Array(IArray[T]):  
 
     def __init__(self, starting_sequence: Sequence[T]=[], data_type: type = object) -> None: 
-        self.__logical_size: int = len(starting_sequence)
-        self.__physical_size: int = self.__logical_size
-        self.__data_type: type = data_type
-
         if not isinstance(starting_sequence, Sequence):
             raise ValueError("'starting_sequence' must be a valid sequence type")
+        self.__logical_size: int = len(starting_sequence)
+        self.__capacity: int = self.__logical_size
+        self.__data_type: type = data_type
+
+        self.__elements = np.empty(self.__logical_size, dtype = self.__data_type)
         
         for item in starting_sequence:
             if not isinstance(item, self.__data_type):
-                raise ValueError(f"Item {repr(item)} is not of type {str(data_type)}")
+                raise TypeError(f"Item {repr(item)} is not of type {str(data_type)}")
 
         self.__items: NDArray = np.empty(self.__logical_size, dtype = self.__data_type)
 
@@ -40,49 +41,126 @@ class Array(IArray[T]):
     @overload
     def __getitem__(self, index: slice) -> Sequence[T]: ...
     def __getitem__(self, index: int | slice) -> T | Sequence[T]:
-            raise NotImplementedError('Indexing not implemented.')
+            
+        if isinstance(index, slice):
+
+            start, stop, step = index.start, index.stop, index.step
+
+            items_to_return = self.__items[index]
+
+            if start is not None and stop is not None:
+                if -len(self) <= start < len(self) and -len(self) <= stop <= len(self):
+                    return Array(starting_sequence=items_to_return.tolist(), data_type=self.__data_type)
+                else:
+                    raise IndexError("Index out of bounds")
+            else:
+                raise TypeError("Slice cannot be None")
+
+
+
+        elif isinstance(index, int):
+
+            if -len(self) <= index < len(self):
+                return self.__items[index]
+            
+            else:
+                raise IndexError("Index out of bounds")
+        
+        else:
+            raise TypeError(f"{index} not an integer or slice")
+            
     
     def __setitem__(self, index: int, item: T) -> None:
-        raise NotImplementedError('Indexing not implemented.')
+        if isinstance(item, self.__data_type):
+            if -len(self) <= index < len(self):
+                self.__items[index] = item
+            else:
+                raise IndexError("Index out of bounds")
+        else:
+            raise TypeError(f"{item} must be of type {self.__data_type}")
 
     def append(self, data: T) -> None:
-        raise NotImplementedError('Append not implemented.')
+        if isinstance(data, self.__data_type):
+            self.__grow(self.__logical_size + 1)
+            self.__items[self.__logical_size] = data
+            self.__logical_size += 1
+        else:
+            raise TypeError(f"{data} must be of type {self.__data_type}")
 
     def append_front(self, data: T) -> None:
-        raise NotImplementedError('Append front not implemented.')
+        if isinstance(data, self.__data_type):
+            self.__grow(self.__logical_size + 1)
+            for i in range(self.__logical_size, 0, -1):
+                self.__items[i] = self.__items[i-1]
+            self.__items[0] = data
+            self.__logical_size += 1
+        else:
+            raise TypeError(f"{data} must be of type {self.__data_type}")
+    
+    def __grow(self, new_size: int) -> None:
+        if new_size > self.__capacity:
+            while new_size > self.__capacity:
+                self.__capacity = self.__capacity * 2
+            new_items = np.empty(self.__capacity, dtype=self.__data_type)
+            new_items[:self.__logical_size] = self.__items
+            self.__items = new_items
+
 
     def pop(self) -> None:
-        raise NotImplementedError('Pop not implemented.')
+        self.__delitem__(self.__logical_size-1)
     
     def pop_front(self) -> None:
-        raise NotImplementedError('Pop front not implemented.')
+        self.__delitem__(0)
 
     def __len__(self) -> int: 
-        raise NotImplementedError('Length not implemented.')
+        return self.__logical_size
 
     def __eq__(self, other: object) -> bool:
-        raise NotImplementedError('Equality not implemented.')
+        if isinstance(other, Array):
+            if len(self) == len(other):
+                for i in range(len(self)):
+                    if self[i] != other[i]:
+                        return False
+                return True
+            else:
+                return False
+        else:
+            return False
     
     def __iter__(self) -> Iterator[T]:
-        raise NotImplementedError('Iteration not implemented.')
+        for item in self.__items:
+            yield item
 
     def __reversed__(self) -> Iterator[T]:
-        raise
-
+        for item in self.__items[-1:0]:
+            yield item
+            
     def __delitem__(self, index: int) -> None:
-       raise NotImplementedError('Delete not implemented.')
+        if isinstance(index, int):
+            if -len(self) <= index < len(self):
+                new_items = np.empty(self.__logical_size - 1, dtype=self.__data_type)
+                new_items[:index] = self.__items[:index]
+                new_items[index:] = self.__items[index + 1:]
+                self.__items = new_items
+                self.__logical_size -= 1
+            else:
+                raise IndexError("Index out of bounds")
+        else:
+            raise TypeError(f"{index} is not of type 'int'")
+        
+
 
     def __contains__(self, item: Any) -> bool:
-        raise NotImplementedError('Contains not implemented.')
+        return any(thing == item for thing in self.__items)
 
     def clear(self) -> None:
-        raise NotImplementedError('Clear not implemented.')
+        self.__init__()
 
     def __str__(self) -> str:
         return '[' + ', '.join(str(item) for item in self) + ']'
     
     def __repr__(self) -> str:
-        return f'Array {self.__str__()}, Logical: {self.__item_count}, Physical: {len(self.__items)}, type: {self.__data_type}'
+        return f'Array {self.__str__()}, Logical: {self.__logical_size}, Physical: {len(self.__items)}, type: {self.__data_type}'
     
 
 if __name__ == '__main__':
