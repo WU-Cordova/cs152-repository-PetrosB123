@@ -100,7 +100,7 @@ class Array(IArray[T]):
     def __grow(self, new_size: int) -> None:
         if new_size > self.__capacity:
             while new_size > self.__capacity:
-                self.__capacity = self.__capacity * 2
+                self.__capacity *= 2
             new_items = np.empty(self.__capacity, dtype=self.__data_type)
             new_items[:self.__logical_size] = self.__items
             self.__items = new_items
@@ -143,6 +143,14 @@ class Array(IArray[T]):
                 new_items[index:] = self.__items[index + 1:]
                 self.__items = new_items
                 self.__logical_size -= 1
+
+
+                new_size = self.__capacity - 1
+                if new_size < self.__capacity/4:
+                    self.__capacity //= 4
+                    new_items = np.empty(self.__capacity, dtype=self.__data_type)
+                    new_items[:self.__logical_size] = self.__items
+                    self.__items = new_items
             else:
                 raise IndexError("Index out of bounds")
         else:
