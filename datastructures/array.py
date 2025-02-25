@@ -145,8 +145,8 @@ class Array(IArray[T]):
                 self.__logical_size -= 1
 
 
-                new_size = self.__capacity - 1
-                if new_size < self.__capacity/4:
+                new_size = self.__logical_size
+                if new_size <= self.__capacity//4:
                     self.__capacity //= 4
                     new_items = np.empty(self.__capacity, dtype=self.__data_type)
                     new_items[:self.__logical_size] = self.__items

@@ -1,26 +1,23 @@
 
-from datastructures.array import Array
+from datastructures.array2d import Array2D
+from tests.car import Car
 
 def main():
     
-    print("Hello, World!")
-    e = Array([1,2,3])
-    print(e._Array__items)
-    e.append(4)
-    print(e._Array__items)
-    e.append(5)
-    print(e._Array__items)
-    e.append_front(0)
-    print(e._Array__items)
-    e[0] = 4
-    print(e._Array__items)
-    e.__delitem__(0)
-    print(e._Array__items)
-    e.pop()
-    print(e._Array__items)
-    e.pop_front()
-    print(e._Array__items)
+    data_type = Car
+    rows_len = 5
+    cols_len = 5
 
-    
+    sequence2d = [[data_type() for _ in range(cols_len)] for _ in range(rows_len)]
+    print(sequence2d)
+    return Array2D(starting_sequence=sequence2d, data_type=data_type)
+
+    sequence2d_2 = []
+    for row_index in range(rows_len):
+        sequence2d_2.append([])
+        for col_index in range(cols_len):
+            sequence2d_2[row_index].append(data_type())
+
+
 if __name__ == '__main__':
     main()
