@@ -14,13 +14,28 @@ class Array2D(IArray2D[T]):
             self.row_index = row_index
             self.array = array
             self.num_columns = num_columns
+            self.__data_type = data_type
 
         def map_index(self, row_index: int, column_index) -> int:
             return row_index * self.num_columns + column_index
 
         def __getitem__(self, column_index: int) -> T:
             # If row and column are out of bounds raise IndexError
-            if column_index < self.num_columns:
+            if isinstance(column_index, slice):
+
+                start, stop, step = column_index.start, column_index.stop, column_index.step
+
+                items_to_return = self.array[column_index]
+
+                if start is not None and stop is not None:
+                    if -len(self) <= start < len(self) and -len(self) <= stop <= len(self):
+                        return items_to_return
+                    else:
+                        raise IndexError("Index out of bounds")
+                else:
+                    raise TypeError("Slice cannot be None")
+            
+            elif column_index < self.num_columns:
                 index: int = self.map_index(self.row_index, column_index)
 
                 return self.array[index]
@@ -66,7 +81,7 @@ class Array2D(IArray2D[T]):
         
         # Check that all the lengths are the same as starting_sequence[0]
         for row in starting_sequence:
-            if len(row) != self.rows_len:
+            if len(row) != self.cols_len:
                 raise ValueError("Lengths of starting_sequence not all the same")
 
         py_list = []
