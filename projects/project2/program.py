@@ -10,8 +10,8 @@ def main():
     """
     Input or generate row and col values and then creates a Grid out of them with randomly dead or alive cells
     """
-    if input("Do you have a file to import?").strip().lower() not in ['yes', 'y']:
-        if input("Welcome to the Game of Life! Do you want to randomly seed the game?").strip().lower() not in ['yes', 'y']:
+    if input("Welcome to the Game of Life! Do you have a file to import?").strip().lower() not in ['yes', 'y']:
+        if input("Do you want to randomly seed the game?").strip().lower() not in ['yes', 'y']:
             rows = int(input("How many rows should the simulation have?"))
             cols = int(input("How many columns should the simulation have?"))
         else:
