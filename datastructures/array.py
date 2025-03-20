@@ -100,7 +100,10 @@ class Array(IArray[T]):
     def __grow(self, new_size: int) -> None:
         if new_size > self.__capacity:
             while new_size > self.__capacity:
-                self.__capacity *= 2
+                if self.__capacity == 0:
+                    self.__capacity += 1
+                else:
+                    self.__capacity *= 2
             new_items = np.empty(self.__capacity, dtype=self.__data_type)
             new_items[:self.__logical_size] = self.__items
             self.__items = new_items
@@ -140,7 +143,7 @@ class Array(IArray[T]):
             if -len(self) <= index < len(self):
                 new_items = np.empty(self.__logical_size - 1, dtype=self.__data_type)
                 new_items[:index] = self.__items[:index]
-                new_items[index:] = self.__items[index + 1:]
+                new_items[index:self.__logical_size - 1] = self.__items[index + 1:self.__logical_size]
                 self.__items = new_items
                 self.__logical_size -= 1
 
