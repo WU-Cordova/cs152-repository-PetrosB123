@@ -1,6 +1,6 @@
 
 
-from random import randint
+from secrets import choice, randbelow
 from projects.project2.cell import Cell
 from projects.project2.gamecontroller import GameController
 from projects.project2.grid import Grid
@@ -15,15 +15,15 @@ def main():
             rows = int(input("How many rows should the simulation have?"))
             cols = int(input("How many columns should the simulation have?"))
         else:
-            rows = randint(5, 20)
-            cols = randint(5, 20)
+            rows = choice(range(5, 20))
+            cols = choice((5, 20))
         
         grid_list = []
         percent = int(input("What percent of the cells should be alive?"))
         for row in range(rows):
             grid_list.append([])
             for col in range(cols):
-                grid_list[-1].append(Cell(bool(True if randint(0,100) <= percent else False)))
+                grid_list[-1].append(Cell(bool(True if randbelow(101) <= percent else False)))
 
 
     else:

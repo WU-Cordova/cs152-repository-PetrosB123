@@ -1,6 +1,6 @@
 from datastructures.bag import Bag
 from projects.project1.card import Card, CardSuit, CardRank
-from random import randint
+from secrets import randbelow
 
 
 class MultiDeck(Bag):
@@ -30,7 +30,7 @@ class MultiDeck(Bag):
         """
         returns and removes a random card from the deck
         """
-        random_card = randint(1, len(self.distinct_items()))
+        random_card = randbelow(len(self.distinct_items()) + 1)
         num = 0
         while num < random_card:
             for key in self._Bag__bag:

@@ -1,4 +1,4 @@
-from random import choice
+from secrets import choice
 from projects.project1.multideck import MultiDeck
 
 

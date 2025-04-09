@@ -1,5 +1,4 @@
 
-from random import randint
 from time import sleep
 from projects.project2.kbhit import KBHit
 
