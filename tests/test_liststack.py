@@ -1,5 +1,6 @@
 import pytest
 from datastructures.liststack import ListStack
+from datastructures.linkedlist import LinkedList, T
 
 class TestListStack:
 
